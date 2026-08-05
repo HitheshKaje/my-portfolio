@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 const Loader = ({ onLoadingComplete }) => {
   const topText = "HITHESH HUB\n        INITIALIZING...";
-  const bottomText = "HITHESH KAJEMOOLE";
+  const bottomText = "HITHESH\nKAJEMOOLE";
   
   useEffect(() => {
     // Top text takes ~3.0s to finish. Bottom text starts at 3.0s and takes ~1.4s. Total ~4.4s.
@@ -83,12 +83,16 @@ const Loader = ({ onLoadingComplete }) => {
           variants={bottomContainerVariants}
           initial="hidden"
           animate="visible"
-          className="text-white font-mono text-4xl md:text-5xl tracking-[0.3em] uppercase opacity-90 flex flex-wrap justify-center font-bold"
+          className="text-white font-mono text-2xl sm:text-3xl md:text-5xl tracking-[0.15em] sm:tracking-[0.3em] uppercase opacity-90 flex flex-wrap justify-center font-bold text-center w-full px-2 sm:px-4"
         >
           {bottomText.split("").map((char, index) => (
-            <motion.span key={index} variants={letterVariants} className={char !== " " ? "glow-text" : ""}>
-              {char === " " ? "\u00A0" : char}
-            </motion.span>
+            char === "\n" ? (
+              <div key={`br-${index}`} className="basis-full h-2 md:h-4"></div>
+            ) : (
+              <motion.span key={index} variants={letterVariants} className={char !== " " ? "glow-text" : ""}>
+                {char === " " ? "\u00A0" : char}
+              </motion.span>
+            )
           ))}
         </motion.div>
       </div>
