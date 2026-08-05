@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #00FF88;
+  --color-secondary: #00E5FF;
+  --color-accent: #7C3AED;
+  --color-dark: #050816;
+  --color-glass: rgba(255, 255, 255, 0.05);
+  
+  --font-orbitron: 'Orbitron', sans-serif;
+  --font-space: 'Space Grotesk', sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+  
+  body {
+    @apply bg-slate-50 dark:bg-dark text-slate-900 dark:text-white overflow-x-hidden m-0 p-0 transition-colors duration-300;
+    font-family: 'Inter', system-ui, sans-serif;
+    cursor: none; /* For custom cursor */
+  }
+
+  p {
+    @apply font-sans font-normal text-[16px] md:text-[18px] leading-[1.8];
+  }
+
+  /* Lenis smooth scroll */
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+  
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+  
+  .lenis.lenis-smooth iframe {
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent;
+  }
+  
+  .glass-panel {
+    @apply bg-white/5 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-2xl shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+  }
+  
+  .glow-text {
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5), 0 0 20px rgba(0, 255, 136, 0.3);
+  }
+  
+  .glow-box {
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.3), inset 0 0 10px rgba(0, 229, 255, 0.1);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-100 dark:bg-dark;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/40 dark:bg-primary/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary/60;
+}
