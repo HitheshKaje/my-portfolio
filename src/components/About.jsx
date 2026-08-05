@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { FaDownload } from 'react-icons/fa';
+import me from '../assets/me.jpeg';
 
 const About = () => {
   return (
@@ -60,7 +61,7 @@ const About = () => {
               {/* Profile Image Container */}
               <div className="absolute inset-6 lg:inset-8 rounded-full overflow-hidden border-[2px] border-primary shadow-[0_0_30px_rgba(0,255,136,0.4)] hover:shadow-[0_0_50px_rgba(0,255,136,0.6)] hover:scale-[1.03] transition-all duration-300 group cursor-pointer bg-dark z-10 flex items-center justify-center">
                 <img
-                  src="/me.jpeg"
+                  src={me}
                   alt="Hithesh K"
                   className="w-full h-full object-cover object-top"
                 />
