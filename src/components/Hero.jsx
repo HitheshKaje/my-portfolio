@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
-import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaRocket, FaEnvelope } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
 
 const linesToType = [
@@ -113,28 +113,38 @@ const Hero = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               href="#projects"
-              className="w-full sm:w-auto text-center px-6 md:px-8 py-3 text-sm md:text-base bg-primary text-slate-900 dark:text-dark font-space font-semibold tracking-wider uppercase border border-primary hover:glow-box transition-all relative overflow-hidden group"
+              className="w-full sm:w-auto text-center px-8 py-3.5 text-sm md:text-base bg-gradient-to-r from-primary via-[#00FFC4] to-secondary text-slate-950 font-space font-bold tracking-wider uppercase rounded-full shadow-[0_0_25px_rgba(0,255,136,0.4)] hover:shadow-[0_0_40px_rgba(0,255,136,0.75)] transition-all duration-300 relative overflow-hidden group flex items-center justify-center gap-3"
             >
               <span className="relative z-10">Initialize Sequence</span>
-              <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
+              <FaRocket className="relative z-10 text-slate-950 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300 text-lg" />
+              <div className="absolute inset-0 bg-white/30 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
             </motion.a>
             <motion.a
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               href="#contact"
-              className="w-full sm:w-auto text-center px-6 md:px-8 py-3 text-sm md:text-base bg-transparent text-slate-900 dark:text-white font-space font-semibold tracking-wider uppercase border border-slate-300 dark:border-white/20 hover:border-secondary hover:text-secondary dark:hover:text-secondary hover:shadow-[0_0_15px_rgba(0,229,255,0.3)] transition-all"
+              className="w-full sm:w-auto text-center px-8 py-3.5 text-sm md:text-base bg-slate-900/40 dark:bg-white/5 backdrop-blur-md text-slate-900 dark:text-white font-space font-semibold tracking-wider uppercase border border-slate-300 dark:border-white/20 hover:border-secondary hover:text-secondary dark:hover:text-secondary rounded-full shadow-[0_0_15px_rgba(0,229,255,0.15)] hover:shadow-[0_0_30px_rgba(0,229,255,0.5)] transition-all duration-300 flex items-center justify-center gap-3 group"
             >
-              Contact
+              <span>Contact</span>
+              <FaEnvelope className="text-secondary/80 group-hover:scale-110 group-hover:text-secondary transition-all duration-300 text-lg" />
             </motion.a>
           </div>
 
-          <div className="flex gap-6 mt-12">
-            {[FaGithub, FaLinkedin, SiLeetcode].map((Icon, i) => (
+          <div className="flex gap-4 sm:gap-5 mt-10">
+            {[
+              { Icon: FaGithub, href: 'https://github.com/HitheshKaje', label: 'GitHub' },
+              { Icon: FaLinkedin, href: 'https://www.linkedin.com/in/hithesh-k-14656132a/', label: 'LinkedIn' },
+              { Icon: SiLeetcode, href: 'https://leetcode.com/u/Hitheshkajemoole/', label: 'LeetCode' }
+            ].map(({ Icon, href, label }, i) => (
               <motion.a
                 key={i}
-                href="#"
-                whileHover={{ y: -5, color: '#00FF88' }}
-                className="text-slate-400 dark:text-white/50 hover:text-primary dark:hover:text-primary transition-colors text-2xl"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                whileHover={{ scale: 1.15, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-slate-900/40 dark:bg-white/5 backdrop-blur-md border border-slate-300/40 dark:border-white/20 hover:border-primary text-slate-700 dark:text-white/80 hover:text-primary dark:hover:text-primary hover:shadow-[0_0_25px_rgba(0,255,136,0.5)] transition-all duration-300 flex items-center justify-center text-2xl sm:text-3xl"
               >
                 <Icon />
               </motion.a>

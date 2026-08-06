@@ -39,18 +39,21 @@ const Projects = () => {
               className="glass-panel group overflow-hidden flex flex-col h-full border-slate-300 dark:border-white/10 hover:border-primary/50 transition-colors duration-300"
             >
               {/* Image Container with overlay */}
-              <div className="relative h-48 md:h-56 overflow-hidden">
-                <div className="absolute inset-0 bg-primary/20 mix-blend-overlay z-10 group-hover:opacity-0 transition-opacity duration-500"></div>
+              <div className="relative h-48 md:h-56 overflow-hidden bg-slate-800 dark:bg-dark">
+                <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent z-10"></div>
                 <img 
                   src={project.image} 
                   alt={project.title} 
-                  className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700"
+                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
                 />
                 
                 {/* Tech stack tags on image */}
                 <div className="absolute bottom-4 left-4 z-20 flex flex-wrap gap-2">
                   {project.technologies.slice(0, 3).map((tech, i) => (
-                    <span key={i} className="px-2 py-1 bg-slate-100/90 dark:bg-dark/80 backdrop-blur border border-slate-300 dark:border-white/10 text-xs font-mono text-primary">
+                    <span key={i} className="px-2.5 py-1 bg-slate-900/80 dark:bg-dark/80 backdrop-blur-md border border-primary/40 text-xs font-mono text-primary rounded-md shadow-sm">
                       {tech}
                     </span>
                   ))}

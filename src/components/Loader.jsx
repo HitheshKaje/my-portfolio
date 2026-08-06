@@ -1,10 +1,52 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 const Loader = ({ onLoadingComplete }) => {
   const topText = "HITHESH HUB\n        INITIALIZING...";
   const bottomText = "HITHESH\nKAJEMOOLE";
   
+  const audioCtxRef = useRef(null);
+
+  useEffect(() => {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (AudioContext) {
+      audioCtxRef.current = new AudioContext();
+    }
+    return () => {
+      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+        audioCtxRef.current.close().catch(() => {});
+      }
+    };
+  }, []);
+
+  const playTickSound = () => {
+    if (!audioCtxRef.current) return;
+    try {
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+      
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(150, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.02);
+
+      gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02);
+
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.02);
+    } catch (e) {
+      // ignore
+    }
+  };
+
   useEffect(() => {
     // Top text takes ~3.0s to finish. Bottom text starts at 3.0s and takes ~1.4s. Total ~4.4s.
     // Add 1s for the user to read before dismissing = 5.5s total timeout.
@@ -69,7 +111,11 @@ const Loader = ({ onLoadingComplete }) => {
               char === "\n" ? (
                 <div key={`br-${index}`} className="basis-full h-2"></div>
               ) : (
-                <motion.span key={index} variants={letterVariants}>
+                <motion.span 
+                  key={index} 
+                  variants={letterVariants}
+                  onAnimationStart={char !== " " ? playTickSound : undefined}
+                >
                   {char === " " ? "\u00A0" : char}
                 </motion.span>
               )
@@ -87,9 +133,16 @@ const Loader = ({ onLoadingComplete }) => {
         >
           {bottomText.split("").map((char, index) => (
             char === "\n" ? (
-              <div key={`br-${index}`} className="basis-full h-2 md:h-4"></div>
+              <div key={`br-${index}`} className="basis-full h-2 md:basis-auto md:h-auto">
+                <span className="hidden md:inline">{"\u00A0"}</span>
+              </div>
             ) : (
-              <motion.span key={index} variants={letterVariants} className={char !== " " ? "glow-text" : ""}>
+              <motion.span 
+                key={index} 
+                variants={letterVariants} 
+                className={char !== " " ? "glow-text" : ""}
+                onAnimationStart={char !== " " ? playTickSound : undefined}
+              >
                 {char === " " ? "\u00A0" : char}
               </motion.span>
             )

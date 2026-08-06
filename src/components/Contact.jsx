@@ -5,7 +5,7 @@ import { FaPaperPlane, FaGithub, FaLinkedin } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
 const Contact = () => {
   const formRef = useRef();
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
 
@@ -14,33 +14,46 @@ const Contact = () => {
     setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setStatus(null);
 
-    // Provide your EmailJS service ID, template ID, and public key here
-    emailjs.send(
-      'SERVICE_ID',
-      'TEMPLATE_ID',
-      {
-        from_name: form.name,
-        to_name: 'John Doe',
-        from_email: form.email,
-        to_email: 'your.email@example.com',
-        message: form.message,
-      },
-      'PUBLIC_KEY'
-    ).then(() => {
-      setLoading(false);
-      setStatus('success');
-      setForm({ name: '', email: '', message: '' });
-      setTimeout(() => setStatus(null), 5000);
-    }).catch((error) => {
+    try {
+      const response = await fetch('https://formsubmit.co/ajax/hitheshkajemoole2004@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          "Sender Name": form.name,
+          "Email Address": form.email,
+          "Phone Number": form.phone,
+          "Message": form.message,
+          "Submission Time": new Date().toLocaleString(),
+          _subject: `New Portfolio Message from ${form.name}`,
+          _template: 'box',
+          _autoresponse: `Hi ${form.name},\n\nThank you for reaching out! I have received your message and will get back to you as soon as possible.\n\nBest regards,\nHithesh Kajemoole`
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok || data.success === "true" || data.success === true) {
+        setLoading(false);
+        setStatus('success');
+        setForm({ name: '', email: '', phone: '', message: '' });
+        setTimeout(() => setStatus(null), 6000);
+      } else {
+        throw new Error(data.message || 'Form submission failed');
+      }
+    } catch (error) {
+      console.error("Contact Form Error:", error);
       setLoading(false);
       setStatus('error');
-      console.log(error);
-      setTimeout(() => setStatus(null), 5000);
-    });
+      setTimeout(() => setStatus(null), 6000);
+    }
   };
 
   return (
@@ -81,10 +94,16 @@ const Contact = () => {
             </p>
             
             <div className="flex gap-6 mt-4">
-              {[FaGithub, FaLinkedin, SiLeetcode].map((Icon, i) => (
+              {[
+                { Icon: FaGithub, href: 'https://github.com/HitheshKaje' },
+                { Icon: FaLinkedin, href: 'https://www.linkedin.com/in/hithesh-k-14656132a/' },
+                { Icon: SiLeetcode, href: 'https://leetcode.com/u/Hitheshkajemoole/' }
+              ].map(({ Icon, href }, i) => (
                 <a
                   key={i}
-                  href="#"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-12 h-12 rounded-full glass-panel flex items-center justify-center border-slate-300 dark:border-white/10 text-slate-500 dark:text-white/50 hover:text-primary dark:hover:text-primary hover:border-primary/50 dark:hover:border-primary/50 hover:shadow-[0_0_15px_rgba(0,255,136,0.3)] transition-all"
                 >
                   <Icon size={20} />
@@ -103,56 +122,69 @@ const Contact = () => {
               onSubmit={handleSubmit}
               className="glass-panel p-8 flex flex-col gap-6"
             >
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-mono text-slate-600 dark:text-white/70 uppercase tracking-wider">Identifier</label>
+              <div className="flex flex-col gap-2.5">
+                <label className="text-base sm:text-lg font-mono text-slate-700 dark:text-white/90 font-semibold tracking-wide">Your Name</label>
                 <input 
                   type="text" 
                   name="name"
                   value={form.name}
                   onChange={handleChange}
                   required
-                  placeholder="What's your name?" 
-                  className="bg-slate-100/50 dark:bg-dark/50 border border-slate-300 dark:border-white/10 p-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:border-primary focus:shadow-[0_0_10px_rgba(0,255,136,0.2)] transition-all font-sans"
+                  placeholder="Enter your full name" 
+                  className="bg-slate-100/50 dark:bg-dark/50 border border-slate-300 dark:border-white/10 p-4.5 text-base sm:text-lg text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-primary focus:shadow-[0_0_15px_rgba(0,255,136,0.3)] transition-all font-sans rounded-xl"
                 />
               </div>
               
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-mono text-slate-600 dark:text-white/70 uppercase tracking-wider">Return Address</label>
+              <div className="flex flex-col gap-2.5">
+                <label className="text-base sm:text-lg font-mono text-slate-700 dark:text-white/90 font-semibold tracking-wide">Your Email</label>
                 <input 
                   type="email" 
                   name="email"
                   value={form.email}
                   onChange={handleChange}
                   required
-                  placeholder="What's your email?" 
-                  className="bg-slate-100/50 dark:bg-dark/50 border border-slate-300 dark:border-white/10 p-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:border-secondary focus:shadow-[0_0_10px_rgba(0,229,255,0.2)] transition-all font-sans"
+                  placeholder="Enter your email address" 
+                  className="bg-slate-100/50 dark:bg-dark/50 border border-slate-300 dark:border-white/10 p-4.5 text-base sm:text-lg text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-secondary focus:shadow-[0_0_15px_rgba(0,229,255,0.3)] transition-all font-sans rounded-xl"
                 />
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-mono text-slate-600 dark:text-white/70 uppercase tracking-wider">Payload</label>
+              <div className="flex flex-col gap-2.5">
+                <label className="text-base sm:text-lg font-mono text-slate-700 dark:text-white/90 font-semibold tracking-wide">Your Phone Number</label>
+                <input 
+                  type="tel" 
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your phone number" 
+                  className="bg-slate-100/50 dark:bg-dark/50 border border-slate-300 dark:border-white/10 p-4.5 text-base sm:text-lg text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#FF00E5] focus:shadow-[0_0_15px_rgba(255,0,229,0.3)] transition-all font-sans rounded-xl"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                <label className="text-base sm:text-lg font-mono text-slate-700 dark:text-white/90 font-semibold tracking-wide">Your Message</label>
                 <textarea 
                   rows="5"
                   name="message"
                   value={form.message}
                   onChange={handleChange}
                   required
-                  placeholder="What do you want to say?" 
-                  className="bg-slate-100/50 dark:bg-dark/50 border border-slate-300 dark:border-white/10 p-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:border-accent focus:shadow-[0_0_10px_rgba(124,58,237,0.2)] transition-all font-sans resize-none"
+                  placeholder="Type your message here..." 
+                  className="bg-slate-100/50 dark:bg-dark/50 border border-slate-300 dark:border-white/10 p-4.5 text-base sm:text-lg text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-accent focus:shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all font-sans resize-none rounded-xl"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-4 w-full py-4 bg-slate-100 dark:bg-white/5 border border-slate-300 dark:border-white/20 hover:border-primary text-slate-700 dark:text-white hover:text-primary dark:hover:text-primary hover:bg-primary/10 transition-all font-space font-semibold tracking-wider uppercase flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
+                className="mt-4 w-full py-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 hover:from-primary hover:via-[#00FFC4] hover:to-secondary border border-primary/50 hover:border-primary text-slate-900 dark:text-white hover:text-slate-950 rounded-full shadow-[0_0_20px_rgba(0,255,136,0.25)] hover:shadow-[0_0_35px_rgba(0,255,136,0.6)] transition-all duration-300 font-space font-bold tracking-wider uppercase flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
               >
                 {loading ? 'Transmitting...' : 'Send Message'}
                 {!loading && <FaPaperPlane className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
               </button>
 
-              {status === 'success' && <p className="text-primary font-mono text-sm text-center mt-2">Message transmitted successfully!</p>}
-              {status === 'error' && <p className="text-red-400 font-mono text-sm text-center mt-2">Transmission failed. Please try again.</p>}
+              {status === 'success' && <p className="text-primary font-mono text-sm text-center mt-2">✓ Message sent directly to Hithesh!</p>}
+              {status === 'error' && <p className="text-red-400 font-mono text-sm text-center mt-2">✕ Submission failed. Please try again.</p>}
             </form>
           </motion.div>
 

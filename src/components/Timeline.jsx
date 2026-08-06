@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { timeline } from '../data/portfolio';
 
@@ -69,15 +69,31 @@ const Timeline = () => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.5, type: "spring", bounce: 0.4 }}
-                  className={`pl-12 md:pl-0 md:w-1/2 ${index % 2 === 0 ? 'md:pl-12' : 'md:pr-12 text-left md:text-right'}`}
+                  className={`pl-12 md:pl-0 md:w-1/2 ${index % 2 === 0 ? 'md:pl-12' : 'md:pr-12'} text-left`}
                 >
                   <div className="glass-panel p-6 hover:border-secondary/50 transition-colors group">
                     <span className="text-secondary font-mono text-sm mb-2 block">{item.year}</span>
                     <h3 className="text-xl font-bold mb-1 text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary transition-colors">{item.role}</h3>
                     <h4 className="text-slate-700 dark:text-white/70 text-sm mb-4 font-mono">{item.company}</h4>
-                    <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed">
-                      {item.description}
-                    </p>
+                    {item.description && (
+                      <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed">
+                        {item.description}
+                      </p>
+                    )}
+                    {item.stats && (
+                      <div className="mt-4">
+                        <div className="w-full h-px bg-slate-200 dark:bg-white/10 mb-3"></div>
+                        <div className="grid grid-cols-[80px_15px_1fr] sm:grid-cols-[100px_15px_1fr] gap-y-2 text-sm text-slate-700 dark:text-white/70 font-mono text-left">
+                          {Object.entries(item.stats).map(([key, val]) => (
+                            <React.Fragment key={key}>
+                              <span className="font-semibold text-slate-800 dark:text-white/90">{key}</span>
+                              <span className="text-center">:</span>
+                              <span className="leading-snug">{val}</span>
+                            </React.Fragment>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
                 

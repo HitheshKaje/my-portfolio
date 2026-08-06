@@ -38,9 +38,9 @@ const About = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="mt-8 flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 w-full sm:w-auto bg-white/5 border border-slate-300 dark:border-white/20 hover:border-primary text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary transition-all rounded-none font-orbitron tracking-wider sm:tracking-widest text-xs sm:text-sm uppercase group"
+                className="mt-8 flex items-center justify-center gap-2 sm:gap-3 px-6 py-3.5 w-full sm:w-auto bg-slate-900/40 dark:bg-white/5 backdrop-blur-md border border-primary/40 hover:border-primary text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary rounded-full shadow-[0_0_15px_rgba(0,255,136,0.2)] hover:shadow-[0_0_30px_rgba(0,255,136,0.5)] transition-all duration-300 font-orbitron tracking-wider sm:tracking-widest text-xs sm:text-sm uppercase group"
               >
-                <FaDownload className="group-hover:-translate-y-1 transition-transform flex-shrink-0" />
+                <FaDownload className="group-hover:-translate-y-1 transition-transform flex-shrink-0 text-primary" />
                 <span className="truncate">Extract_Resume.pdf</span>
               </motion.button>
             </div>
