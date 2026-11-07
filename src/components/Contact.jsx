@@ -11,8 +11,6 @@ const Contact = () => {
   const [copied, setCopied] = useState(false);
 
   const targetEmail = 'hitheshkajemoole2004@gmail.com';
-
-  // Optional: If you obtain a free access key from https://web3forms.com, paste it here
   const WEB3FORMS_ACCESS_KEY = '80879ea3-1360-41c5-9d91-ede8dfb6c2ec';
 
   const handleChange = (e) => {
@@ -26,7 +24,7 @@ const Contact = () => {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  // Pre-formatted direct web Gmail compose URL
+  // Direct web Gmail compose URL pre-filled with visitor details
   const getGmailComposeUrl = () => {
     const subject = encodeURIComponent(
       form.name ? `Portfolio Inquiry from ${form.name}` : 'Portfolio Inquiry'
@@ -37,73 +35,53 @@ const Contact = () => {
     return `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${subject}&body=${body}`;
   };
 
-  // Form submission handler:
-  // If WEB3FORMS_ACCESS_KEY is set, uses Web3Forms JSON API.
-  // Otherwise, uses native FormSubmit via hidden iframe.
+  // Professional Web3Forms Submission with structured metadata & zero third-party ads
   const handleSubmit = async (e) => {
-    if (WEB3FORMS_ACCESS_KEY) {
-      e.preventDefault();
-      setLoading(true);
-      setStatus(null);
+    e.preventDefault();
+    setLoading(true);
+    setStatus(null);
 
-      try {
-        const response = await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            access_key: WEB3FORMS_ACCESS_KEY,
-            name: form.name,
-            email: form.email,
-            replyto: form.email,
-            from_name: form.name,
-            phone: form.phone || 'Not provided',
-            message: form.message,
-            subject: `New Portfolio Message from ${form.name}`
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          from_name: `${form.name} (Portfolio Inquiry)`,
+          subject: `💼 New Portfolio Message from ${form.name}`,
+          replyto: form.email,
+          'Sender Full Name': form.name,
+          'Email Address': form.email,
+          'Phone Number': form.phone ? form.phone : 'Not provided',
+          'Message Content': form.message,
+          'Submitted Date & Time': new Date().toLocaleString('en-IN', {
+            dateStyle: 'full',
+            timeStyle: 'medium'
           })
-        });
+        })
+      });
 
-        const data = await response.json();
-        if (data.success) {
-          setLoading(false);
-          setStatus('success');
-          setForm({ name: '', email: '', phone: '', message: '' });
-          setTimeout(() => setStatus(null), 8000);
-        } else {
-          throw new Error(data.message || 'Transmission failed');
-        }
-      } catch (err) {
-        console.error('Web3Forms Error:', err);
-        setLoading(false);
-        setStatus('error');
-      }
-    } else {
-      // Native FormSubmit via hidden iframe
-      setLoading(true);
-      setStatus(null);
-
-      setTimeout(() => {
+      const data = await response.json();
+      if (data.success) {
         setLoading(false);
         setStatus('success');
         setForm({ name: '', email: '', phone: '', message: '' });
-        setTimeout(() => setStatus(null), 10000);
-      }, 900);
+        setTimeout(() => setStatus(null), 8000);
+      } else {
+        throw new Error(data.message || 'Transmission failed');
+      }
+    } catch (err) {
+      console.error('Web3Forms Error:', err);
+      setLoading(false);
+      setStatus('error');
     }
   };
 
   return (
     <section id="contact" className="py-24 relative z-10">
-      {/* Hidden iframe target to consume native form submission without page reload or CORS errors */}
-      <iframe
-        name="formsubmit_sink"
-        id="formsubmit_sink"
-        title="FormSubmit Sink"
-        className="hidden"
-        style={{ display: 'none' }}
-      />
-
       <div className="max-w-5xl mx-auto px-6">
         
         {/* Section Header */}
@@ -210,29 +188,11 @@ const Contact = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            {/* Native Form POST to FormSubmit via Hidden Iframe */}
             <form 
               ref={formRef}
-              action={`https://formsubmit.co/${targetEmail}`}
-              method="POST"
-              target="formsubmit_sink"
               onSubmit={handleSubmit}
               className="glass-panel p-6 sm:p-8 flex flex-col gap-5 border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.15)]"
             >
-              {/* FormSubmit Configuration Directives */}
-              <input type="hidden" name="_captcha" value="false" />
-              <input type="hidden" name="_template" value="table" />
-              <input 
-                type="hidden" 
-                name="_subject" 
-                value={`New Portfolio Message from ${form.name || 'Visitor'}`} 
-              />
-              <input 
-                type="hidden" 
-                name="_autoresponse" 
-                value={`Hi ${form.name || 'there'},\n\nThank you for reaching out through my portfolio! I have received your message and will respond as soon as possible.\n\nBest regards,\nHithesh Kajemoole`} 
-              />
-
               {/* Name Field */}
               <div className="flex flex-col gap-2">
                 <label className="text-sm sm:text-base font-mono text-slate-700 dark:text-white/90 font-semibold tracking-wide">
@@ -306,15 +266,15 @@ const Contact = () => {
                 {!loading && <FaPaperPlane className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
               </button>
 
-              {/* Success Notification with Friendly Guidance */}
+              {/* Success Notification */}
               {status === 'success' && (
                 <div className="p-4 rounded-xl bg-primary/10 border border-primary/40 text-primary font-mono text-xs sm:text-sm text-center flex flex-col gap-2">
                   <div className="flex items-center justify-center gap-2 font-bold">
                     <FaCheck />
-                    <span>Message sent to Hithesh!</span>
+                    <span>Message delivered directly to Hithesh!</span>
                   </div>
                   <p className="text-[11px] text-slate-300 font-sans leading-normal">
-                    Delivered to <strong>{targetEmail}</strong>. (Note: On your first test, check Gmail for FormSubmit's activation email to activate incoming delivery!)
+                    Delivered straight to <strong>{targetEmail}</strong>!
                   </p>
                 </div>
               )}
