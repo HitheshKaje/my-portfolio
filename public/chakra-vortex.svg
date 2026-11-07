@@ -1,0 +1,103 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-160 -160 320 320" width="100%" height="100%">
+  <defs>
+    <!-- Core intense white/cyan gradient -->
+    <radialGradient id="nucleusGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+      <stop offset="35%" stop-color="#a5f3fc" stop-opacity="0.95" />
+      <stop offset="70%" stop-color="#38bdf8" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Outer diffuse aura -->
+    <radialGradient id="vortexAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.3" />
+      <stop offset="50%" stop-color="#0369a1" stop-opacity="0.15" />
+      <stop offset="85%" stop-color="#38bdf8" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Primary arm gradient -->
+    <linearGradient id="armGrad1" x1="0%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+      <stop offset="25%" stop-color="#67e8f9" stop-opacity="0.9" />
+      <stop offset="60%" stop-color="#0284c7" stop-opacity="0.8" />
+      <stop offset="90%" stop-color="#0369a1" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#075985" stop-opacity="0.1" />
+    </linearGradient>
+
+    <!-- Secondary arm gradient -->
+    <linearGradient id="armGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="30%" stop-color="#38bdf8" stop-opacity="0.85" />
+      <stop offset="75%" stop-color="#0284c7" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Filter for vibrant bloom -->
+    <filter id="chakraBloom" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur1" />
+      <feGaussianBlur stdDeviation="6" result="blur2" />
+      <feMerge>
+        <feMergeNode in="blur2" />
+        <feMergeNode in="blur1" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Arm paths -->
+    <path id="chakra-arm-primary" d="M 0 15 C 8 30, 24 55, 45 80 C 62 100, 78 118, 70 130 C 58 116, 42 94, 25 70 C 12 50, 2 30, -5 18 Z" fill="url(#armGrad1)" filter="url(#chakraBloom)" />
+    <path id="chakra-arm-secondary" d="M 0 12 C 6 25, 18 45, 34 68 C 48 86, 62 105, 55 116 C 45 102, 32 80, 18 58 C 8 40, 1 24, -4 15 Z" fill="url(#armGrad2)" filter="url(#chakraBloom)" opacity="0.85" />
+  </defs>
+
+  <!-- Diffuse background glow -->
+  <circle cx="0" cy="0" r="150" fill="url(#vortexAura)" />
+
+  <!-- Outer energy rings with cyber dash styling -->
+  <circle cx="0" cy="0" r="138" fill="none" stroke="#38bdf8" stroke-width="0.75" stroke-dasharray="8 12" opacity="0.35" />
+  <circle cx="0" cy="0" r="145" fill="none" stroke="#00e5ff" stroke-width="0.5" stroke-dasharray="3 6 12 6" opacity="0.25" />
+  <circle cx="0" cy="0" r="126" fill="none" stroke="#0284c7" stroke-width="0.5" stroke-dasharray="24 8" opacity="0.3" />
+
+  <!-- The Swirling Chakra Arms -->
+  <g id="chakra-arms-outer">
+    <use href="#chakra-arm-primary" transform="rotate(0.00)" />
+    <use href="#chakra-arm-primary" transform="rotate(22.50)" />
+    <use href="#chakra-arm-primary" transform="rotate(45.00)" />
+    <use href="#chakra-arm-primary" transform="rotate(67.50)" />
+    <use href="#chakra-arm-primary" transform="rotate(90.00)" />
+    <use href="#chakra-arm-primary" transform="rotate(112.50)" />
+    <use href="#chakra-arm-primary" transform="rotate(135.00)" />
+    <use href="#chakra-arm-primary" transform="rotate(157.50)" />
+    <use href="#chakra-arm-primary" transform="rotate(180.00)" />
+    <use href="#chakra-arm-primary" transform="rotate(202.50)" />
+    <use href="#chakra-arm-primary" transform="rotate(225.00)" />
+    <use href="#chakra-arm-primary" transform="rotate(247.50)" />
+    <use href="#chakra-arm-primary" transform="rotate(270.00)" />
+    <use href="#chakra-arm-primary" transform="rotate(292.50)" />
+    <use href="#chakra-arm-primary" transform="rotate(315.00)" />
+    <use href="#chakra-arm-primary" transform="rotate(337.50)" />
+  </g>
+  <g id="chakra-arms-inner">
+    <use href="#chakra-arm-secondary" transform="rotate(11.25) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(33.75) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(56.25) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(78.75) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(101.25) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(123.75) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(146.25) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(168.75) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(191.25) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(213.75) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(236.25) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(258.75) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(281.25) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(303.75) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(326.25) scale(0.75)" />
+    <use href="#chakra-arm-secondary" transform="rotate(348.75) scale(0.75)" />
+  </g>
+
+  <!-- Core Glowing Nucleus -->
+  <circle cx="0" cy="0" r="50" fill="url(#nucleusGrad)" />
+  <circle cx="0" cy="0" r="22" fill="#ffffff" filter="url(#chakraBloom)" opacity="0.95" />
+  <circle cx="0" cy="0" r="12" fill="#ffffff" />
+</svg>

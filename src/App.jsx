@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Lenis from 'lenis';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import Loader from './components/Loader';
 import Cursor from './components/Cursor';
@@ -53,7 +53,11 @@ function App() {
       </AnimatePresence>
 
       {!loading && (
-        <>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           <Background />
           <Navbar />
           <main>
@@ -66,7 +70,7 @@ function App() {
             <Contact />
           </main>
           <Footer />
-        </>
+        </motion.div>
       )}
     </>
   );
