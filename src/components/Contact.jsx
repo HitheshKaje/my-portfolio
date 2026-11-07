@@ -1,16 +1,19 @@
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaPaperPlane, FaGithub, FaLinkedin, FaEnvelope, FaCopy, FaCheck } from 'react-icons/fa';
-import { SiLeetcode } from 'react-icons/si';
+import { SiLeetcode, SiGmail } from 'react-icons/si';
 
 const Contact = () => {
   const formRef = useRef();
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); // 'success' | null
+  const [status, setStatus] = useState(null); // 'success' | 'error' | null
   const [copied, setCopied] = useState(false);
 
   const targetEmail = 'hitheshkajemoole2004@gmail.com';
+
+  // Optional: If you obtain a free access key from https://web3forms.com, paste it here
+  const WEB3FORMS_ACCESS_KEY = '80879ea3-1360-41c5-9d91-ede8dfb6c2ec';
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,19 +26,71 @@ const Contact = () => {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  // Form submits via native browser POST targeting the hidden iframe
-  // This completely eliminates CORS preflight errors ("Failed to fetch")
-  const handleSubmit = () => {
-    setLoading(true);
-    setStatus(null);
+  // Pre-formatted direct web Gmail compose URL
+  const getGmailComposeUrl = () => {
+    const subject = encodeURIComponent(
+      form.name ? `Portfolio Inquiry from ${form.name}` : 'Portfolio Inquiry'
+    );
+    const body = encodeURIComponent(
+      `${form.message || ''}\n\n---\nSender: ${form.name || 'Visitor'}\nEmail: ${form.email || 'Not provided'}\nPhone: ${form.phone || 'Not provided'}`
+    );
+    return `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${subject}&body=${body}`;
+  };
 
-    // Give browser 900ms to dispatch the native form POST to the hidden iframe
-    setTimeout(() => {
-      setLoading(false);
-      setStatus('success');
-      setForm({ name: '', email: '', phone: '', message: '' });
-      setTimeout(() => setStatus(null), 9000);
-    }, 900);
+  // Form submission handler:
+  // If WEB3FORMS_ACCESS_KEY is set, uses Web3Forms JSON API.
+  // Otherwise, uses native FormSubmit via hidden iframe.
+  const handleSubmit = async (e) => {
+    if (WEB3FORMS_ACCESS_KEY) {
+      e.preventDefault();
+      setLoading(true);
+      setStatus(null);
+
+      try {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_ACCESS_KEY,
+            name: form.name,
+            email: form.email,
+            replyto: form.email,
+            from_name: form.name,
+            phone: form.phone || 'Not provided',
+            message: form.message,
+            subject: `New Portfolio Message from ${form.name}`
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          setLoading(false);
+          setStatus('success');
+          setForm({ name: '', email: '', phone: '', message: '' });
+          setTimeout(() => setStatus(null), 8000);
+        } else {
+          throw new Error(data.message || 'Transmission failed');
+        }
+      } catch (err) {
+        console.error('Web3Forms Error:', err);
+        setLoading(false);
+        setStatus('error');
+      }
+    } else {
+      // Native FormSubmit via hidden iframe
+      setLoading(true);
+      setStatus(null);
+
+      setTimeout(() => {
+        setLoading(false);
+        setStatus('success');
+        setForm({ name: '', email: '', phone: '', message: '' });
+        setTimeout(() => setStatus(null), 10000);
+      }, 900);
+    }
   };
 
   return (
@@ -89,7 +144,7 @@ const Contact = () => {
             </p>
 
             {/* Direct Email Card with 1-Click Copy */}
-            <div className="mb-8 p-4 rounded-xl glass-panel border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="mb-6 p-4 rounded-xl glass-panel border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 overflow-hidden">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary flex-shrink-0">
                   <FaEnvelope size={18} />
@@ -115,6 +170,18 @@ const Contact = () => {
                 <span>{copied ? 'Copied!' : 'Copy'}</span>
               </button>
             </div>
+
+            {/* Direct Webmail Launch Option */}
+            <a
+              href={getGmailComposeUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-8 p-3.5 rounded-xl border border-red-500/30 hover:border-red-500/60 bg-red-500/10 hover:bg-red-500/20 text-slate-900 dark:text-white flex items-center justify-center gap-2.5 text-xs sm:text-sm font-mono transition-all cursor-pointer group"
+            >
+              <SiGmail className="text-red-400 text-base group-hover:scale-110 transition-transform" />
+              <span>Or click here to open directly in Gmail Compose</span>
+              <span className="text-red-400 font-bold">↗</span>
+            </a>
             
             {/* Social Links */}
             <div className="flex gap-4">
@@ -239,16 +306,31 @@ const Contact = () => {
                 {!loading && <FaPaperPlane className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
               </button>
 
-              {/* Success Notification */}
+              {/* Success Notification with Friendly Guidance */}
               {status === 'success' && (
                 <div className="p-4 rounded-xl bg-primary/10 border border-primary/40 text-primary font-mono text-xs sm:text-sm text-center flex flex-col gap-2">
                   <div className="flex items-center justify-center gap-2 font-bold">
                     <FaCheck />
-                    <span>Message transmitted directly to Hithesh!</span>
+                    <span>Message sent to Hithesh!</span>
                   </div>
                   <p className="text-[11px] text-slate-300 font-sans leading-normal">
-                    Delivered to <strong>{targetEmail}</strong>. (If this is your first test, check your Gmail inbox to confirm the one-time FormSubmit activation!)
+                    Delivered to <strong>{targetEmail}</strong>. (Note: On your first test, check Gmail for FormSubmit's activation email to activate incoming delivery!)
                   </p>
+                </div>
+              )}
+
+              {/* Fallback Option */}
+              {status === 'error' && (
+                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 font-mono text-xs sm:text-sm text-center flex flex-col gap-2.5">
+                  <span>Unable to complete transmission.</span>
+                  <a
+                    href={getGmailComposeUrl()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary/20 hover:bg-primary hover:text-dark text-primary font-bold text-xs sm:text-sm transition-all"
+                  >
+                    <SiGmail /> Click to send directly via Gmail
+                  </a>
                 </div>
               )}
             </form>
