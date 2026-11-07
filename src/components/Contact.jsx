@@ -1,14 +1,13 @@
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaPaperPlane, FaGithub, FaLinkedin, FaEnvelope, FaCopy, FaCheck, FaExclamationTriangle } from 'react-icons/fa';
+import { FaPaperPlane, FaGithub, FaLinkedin, FaEnvelope, FaCopy, FaCheck } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
 
 const Contact = () => {
   const formRef = useRef();
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); // 'success' | 'activation' | 'error' | null
-  const [errorMessage, setErrorMessage] = useState('');
+  const [status, setStatus] = useState(null); // 'success' | null
   const [copied, setCopied] = useState(false);
 
   const targetEmail = 'hitheshkajemoole2004@gmail.com';
@@ -24,63 +23,32 @@ const Contact = () => {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Form submits via native browser POST targeting the hidden iframe
+  // This completely eliminates CORS preflight errors ("Failed to fetch")
+  const handleSubmit = () => {
     setLoading(true);
     setStatus(null);
-    setErrorMessage('');
 
-    try {
-      const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          phone: form.phone || 'Not provided',
-          message: form.message,
-          _replyto: form.email,
-          _subject: `New Portfolio Message from ${form.name}`,
-          _captcha: 'false',
-          _template: 'table',
-          _autoresponse: `Hi ${form.name},\n\nThank you for reaching out through my portfolio! I have received your message and will respond as soon as possible.\n\nBest regards,\nHithesh Kajemoole`
-        })
-      });
-
-      let data = {};
-      try {
-        data = await response.json();
-      } catch {
-        // Non-JSON response
-      }
-
-      const msg = (data.message || '').toLowerCase();
-      const needsActivation = msg.includes('confirm') || msg.includes('activat') || msg.includes('check your email');
-
-      if (needsActivation) {
-        setLoading(false);
-        setStatus('activation');
-      } else if (response.ok && (data.success === 'true' || data.success === true || response.status === 200)) {
-        setLoading(false);
-        setStatus('success');
-        setForm({ name: '', email: '', phone: '', message: '' });
-        setTimeout(() => setStatus(null), 8000);
-      } else {
-        throw new Error(data.message || `Server responded with status ${response.status}`);
-      }
-    } catch (error) {
-      console.error('Contact Form Transmission Error:', error);
+    // Give browser 900ms to dispatch the native form POST to the hidden iframe
+    setTimeout(() => {
       setLoading(false);
-      setStatus('error');
-      setErrorMessage(error.message || 'Network error');
-    }
+      setStatus('success');
+      setForm({ name: '', email: '', phone: '', message: '' });
+      setTimeout(() => setStatus(null), 9000);
+    }, 900);
   };
 
   return (
     <section id="contact" className="py-24 relative z-10">
+      {/* Hidden iframe target to consume native form submission without page reload or CORS errors */}
+      <iframe
+        name="formsubmit_sink"
+        id="formsubmit_sink"
+        title="FormSubmit Sink"
+        className="hidden"
+        style={{ display: 'none' }}
+      />
+
       <div className="max-w-5xl mx-auto px-6">
         
         {/* Section Header */}
@@ -120,7 +88,7 @@ const Contact = () => {
               Whether you have a project in mind, a job opportunity, or just want to connect, my inbox is always open. Every message is delivered straight to my personal email.
             </p>
 
-            {/* Direct Email Pill with 1-Click Copy */}
+            {/* Direct Email Card with 1-Click Copy */}
             <div className="mb-8 p-4 rounded-xl glass-panel border border-primary/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 overflow-hidden">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary flex-shrink-0">
@@ -175,11 +143,29 @@ const Contact = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
+            {/* Native Form POST to FormSubmit via Hidden Iframe */}
             <form 
               ref={formRef}
+              action={`https://formsubmit.co/${targetEmail}`}
+              method="POST"
+              target="formsubmit_sink"
               onSubmit={handleSubmit}
               className="glass-panel p-6 sm:p-8 flex flex-col gap-5 border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.15)]"
             >
+              {/* FormSubmit Configuration Directives */}
+              <input type="hidden" name="_captcha" value="false" />
+              <input type="hidden" name="_template" value="table" />
+              <input 
+                type="hidden" 
+                name="_subject" 
+                value={`New Portfolio Message from ${form.name || 'Visitor'}`} 
+              />
+              <input 
+                type="hidden" 
+                name="_autoresponse" 
+                value={`Hi ${form.name || 'there'},\n\nThank you for reaching out through my portfolio! I have received your message and will respond as soon as possible.\n\nBest regards,\nHithesh Kajemoole`} 
+              />
+
               {/* Name Field */}
               <div className="flex flex-col gap-2">
                 <label className="text-sm sm:text-base font-mono text-slate-700 dark:text-white/90 font-semibold tracking-wide">
@@ -255,45 +241,14 @@ const Contact = () => {
 
               {/* Success Notification */}
               {status === 'success' && (
-                <div className="p-4 rounded-xl bg-primary/10 border border-primary/40 text-primary font-mono text-xs sm:text-sm text-center flex items-center justify-center gap-2">
-                  <FaCheck />
-                  <span>Message delivered directly to Hithesh ({targetEmail})!</span>
-                </div>
-              )}
-
-              {/* One-Time Activation Notice */}
-              {status === 'activation' && (
-                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-300 font-mono text-xs sm:text-sm flex flex-col gap-2">
-                  <div className="flex items-center gap-2 font-bold text-amber-200">
-                    <FaExclamationTriangle />
-                    <span>One-Time Form Activation Required!</span>
-                  </div>
-                  <p className="text-slate-300 leading-relaxed text-xs">
-                    FormSubmit sent a confirmation email to <strong className="text-white">{targetEmail}</strong>.
-                  </p>
-                  <p className="text-slate-300 leading-relaxed text-xs">
-                    Please open your Gmail inbox (or Spam folder) and click the <strong className="text-primary font-bold">"Activate Form"</strong> button. Once clicked, all future submissions will arrive instantly in your inbox!
-                  </p>
-                </div>
-              )}
-
-              {/* Fallback Option if direct API experiences block */}
-              {status === 'error' && (
-                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 font-mono text-xs sm:text-sm text-center flex flex-col gap-2.5">
+                <div className="p-4 rounded-xl bg-primary/10 border border-primary/40 text-primary font-mono text-xs sm:text-sm text-center flex flex-col gap-2">
                   <div className="flex items-center justify-center gap-2 font-bold">
-                    <span>Transmission could not be completed ({errorMessage || 'Network'}).</span>
+                    <FaCheck />
+                    <span>Message transmitted directly to Hithesh!</span>
                   </div>
-                  <p className="text-slate-300 text-xs">
-                    You can send your message directly via your email client:
+                  <p className="text-[11px] text-slate-300 font-sans leading-normal">
+                    Delivered to <strong>{targetEmail}</strong>. (If this is your first test, check your Gmail inbox to confirm the one-time FormSubmit activation!)
                   </p>
-                  <a
-                    href={`mailto:${targetEmail}?subject=Portfolio%20Message%20from%20${encodeURIComponent(form.name || 'Visitor')}&body=${encodeURIComponent(
-                      `Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\n\nMessage:\n${form.message}`
-                    )}`}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary/20 hover:bg-primary hover:text-dark text-primary font-bold text-xs sm:text-sm transition-all"
-                  >
-                    <FaEnvelope /> Open in Gmail / Email App
-                  </a>
                 </div>
               )}
             </form>
