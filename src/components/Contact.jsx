@@ -1,13 +1,14 @@
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaPaperPlane, FaGithub, FaLinkedin, FaEnvelope, FaCopy, FaCheck } from 'react-icons/fa';
+import { FaPaperPlane, FaGithub, FaLinkedin, FaEnvelope, FaCopy, FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { SiLeetcode } from 'react-icons/si';
 
 const Contact = () => {
   const formRef = useRef();
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); // 'success' | 'error' | null
+  const [status, setStatus] = useState(null); // 'success' | 'activation' | 'error' | null
+  const [errorMessage, setErrorMessage] = useState('');
   const [copied, setCopied] = useState(false);
 
   const targetEmail = 'hitheshkajemoole2004@gmail.com';
@@ -27,6 +28,7 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
     setStatus(null);
+    setErrorMessage('');
 
     try {
       const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
@@ -48,20 +50,32 @@ const Contact = () => {
         })
       });
 
-      const data = await response.json();
+      let data = {};
+      try {
+        data = await response.json();
+      } catch {
+        // Non-JSON response
+      }
 
-      if (response.ok || data.success === 'true' || data.success === true || response.status === 200) {
+      const msg = (data.message || '').toLowerCase();
+      const needsActivation = msg.includes('confirm') || msg.includes('activat') || msg.includes('check your email');
+
+      if (needsActivation) {
+        setLoading(false);
+        setStatus('activation');
+      } else if (response.ok && (data.success === 'true' || data.success === true || response.status === 200)) {
         setLoading(false);
         setStatus('success');
         setForm({ name: '', email: '', phone: '', message: '' });
-        setTimeout(() => setStatus(null), 7000);
+        setTimeout(() => setStatus(null), 8000);
       } else {
-        throw new Error(data.message || 'Submission failed');
+        throw new Error(data.message || `Server responded with status ${response.status}`);
       }
     } catch (error) {
       console.error('Contact Form Transmission Error:', error);
       setLoading(false);
       setStatus('error');
+      setErrorMessage(error.message || 'Network error');
     }
   };
 
@@ -241,21 +255,44 @@ const Contact = () => {
 
               {/* Success Notification */}
               {status === 'success' && (
-                <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/40 text-primary font-mono text-xs sm:text-sm text-center flex items-center justify-center gap-2">
+                <div className="p-4 rounded-xl bg-primary/10 border border-primary/40 text-primary font-mono text-xs sm:text-sm text-center flex items-center justify-center gap-2">
                   <FaCheck />
                   <span>Message delivered directly to Hithesh ({targetEmail})!</span>
                 </div>
               )}
 
+              {/* One-Time Activation Notice */}
+              {status === 'activation' && (
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-300 font-mono text-xs sm:text-sm flex flex-col gap-2">
+                  <div className="flex items-center gap-2 font-bold text-amber-200">
+                    <FaExclamationTriangle />
+                    <span>One-Time Form Activation Required!</span>
+                  </div>
+                  <p className="text-slate-300 leading-relaxed text-xs">
+                    FormSubmit sent a confirmation email to <strong className="text-white">{targetEmail}</strong>.
+                  </p>
+                  <p className="text-slate-300 leading-relaxed text-xs">
+                    Please open your Gmail inbox (or Spam folder) and click the <strong className="text-primary font-bold">"Activate Form"</strong> button. Once clicked, all future submissions will arrive instantly in your inbox!
+                  </p>
+                </div>
+              )}
+
               {/* Fallback Option if direct API experiences block */}
               {status === 'error' && (
-                <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 font-mono text-xs sm:text-sm text-center flex flex-col gap-2">
-                  <span>Network issue submitting message.</span>
+                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 font-mono text-xs sm:text-sm text-center flex flex-col gap-2.5">
+                  <div className="flex items-center justify-center gap-2 font-bold">
+                    <span>Transmission could not be completed ({errorMessage || 'Network'}).</span>
+                  </div>
+                  <p className="text-slate-300 text-xs">
+                    You can send your message directly via your email client:
+                  </p>
                   <a
-                    href={`mailto:${targetEmail}?subject=Portfolio%20Message%20from%20${encodeURIComponent(form.name || 'Visitor')}&body=${encodeURIComponent(form.message || '')}`}
-                    className="inline-flex items-center justify-center gap-1.5 text-primary hover:underline font-bold"
+                    href={`mailto:${targetEmail}?subject=Portfolio%20Message%20from%20${encodeURIComponent(form.name || 'Visitor')}&body=${encodeURIComponent(
+                      `Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\n\nMessage:\n${form.message}`
+                    )}`}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary/20 hover:bg-primary hover:text-dark text-primary font-bold text-xs sm:text-sm transition-all"
                   >
-                    <FaEnvelope /> Click here to send directly via Email client
+                    <FaEnvelope /> Open in Gmail / Email App
                   </a>
                 </div>
               )}
