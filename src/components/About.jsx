@@ -47,25 +47,33 @@ const About = () => {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             className="order-1 lg:order-2 flex justify-center items-center"
           >
-            <div className="relative w-[220px] h-[220px] md:w-[280px] md:h-[280px] lg:w-[340px] lg:h-[340px] flex justify-center items-center">
-              {/* Outer decorative rings */}
-              <div className="absolute inset-0 border-[2px] border-dashed border-secondary/50 rounded-full animate-[spin_20s_linear_infinite]"></div>
-              <div className="absolute inset-3 lg:inset-4 border border-primary/30 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
+            <div className="relative group p-3">
+              {/* Futuristic Cyber Frame / Corner Accents */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary via-secondary to-accent rounded-xl blur-lg opacity-30 group-hover:opacity-75 transition-opacity duration-500"></div>
 
-              {/* Profile Image Container */}
-              <div className="absolute inset-6 lg:inset-8 rounded-full overflow-hidden border-[2px] border-primary shadow-[0_0_30px_rgba(0,255,136,0.4)] hover:shadow-[0_0_50px_rgba(0,255,136,0.6)] hover:scale-[1.03] transition-all duration-300 group cursor-pointer bg-dark z-10 flex items-center justify-center">
+              {/* Outer Decorative Square Border */}
+              <div className="absolute inset-0 border border-secondary/40 rounded-xl pointer-events-none"></div>
+
+              {/* Corner Tech Brackets */}
+              <div className="absolute -top-1.5 -left-1.5 w-6 h-6 border-t-2 border-l-2 border-primary z-20"></div>
+              <div className="absolute -top-1.5 -right-1.5 w-6 h-6 border-t-2 border-r-2 border-secondary z-20"></div>
+              <div className="absolute -bottom-1.5 -left-1.5 w-6 h-6 border-b-2 border-l-2 border-secondary z-20"></div>
+              <div className="absolute -bottom-1.5 -right-1.5 w-6 h-6 border-b-2 border-r-2 border-primary z-20"></div>
+
+              {/* Square Profile Image Container */}
+              <div className="relative w-[240px] h-[240px] sm:w-[280px] sm:h-[280px] md:w-[320px] md:h-[320px] lg:w-[360px] lg:h-[360px] rounded-lg overflow-hidden border-2 border-primary/60 shadow-[0_0_30px_rgba(0,255,136,0.25)] group-hover:shadow-[0_0_50px_rgba(0,255,136,0.5)] group-hover:border-primary transition-all duration-300 bg-dark z-10">
                 <img
                   src={me}
                   alt="Hithesh K"
-                  className="w-full h-full object-cover object-top"
+                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-transparent opacity-40 group-hover:opacity-10 transition-opacity duration-300"></div>
               </div>
             </div>
           </motion.div>
